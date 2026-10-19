@@ -20,11 +20,11 @@ local Utils = require("utils")
 ------------------------------
 -- Don't change code below --
 ------------------------------
-ModName = "InstantBenching"
+ModName = "Abiotic-Workout"
 ModVersion = "1.0.0"
 DebugMode = false
 
-Utils.log("Starting Instant Benching mod initialization")
+Utils.log("Starting Abiotic-Workout mod initialization")
 
 
 Debuffs = {
@@ -60,13 +60,6 @@ Buffs = {
 }
 
 
--- local function handle_minigame(Context)
---     local player = Context:get() ---@type AAbioticPlayerController
---     -- print(">> Instant Benching: Minigame Hook Caught << ")
---     if ModEnabled then
---         player.Request_BenchPressReward(1000)
---     end
--- end
 
 local function Handle_Server_ApplyBuff(Context, BuffRow, bOverrideDefaultDuration, NewDuration, Limb, LinkedActor, bSkipDialog)
 
@@ -105,7 +98,12 @@ local function Handle_Server_ApplyBuff(Context, BuffRow, bOverrideDefaultDuratio
                         local buffRow = BuffRow:get() ---@type FBuffDebuffRowHandle
                         local rowName = buffRow.RowName
                         local buffRowName = rowName:ToString()
-                        player_controller = playerState:GetPlayerController()
+                        
+                        local player_controller = playerState:GetPlayerController()
+                        local prog = player_controller.CharacterProgressionComponent
+                        local sprint_check = prog.SprintingXPCheckInterval
+                        prog.SprintingXPCheckInterval = 0.001
+                        
                         --Utils.log("rowName: " )
                         --Utils.log(rowName)
                         --Utils.log(buffRowName)
@@ -138,7 +136,6 @@ local function Handle_Server_ApplyBuff(Context, BuffRow, bOverrideDefaultDuratio
                             Utils.ApplyBuff(playerState.PawnPrivate, Buffs.Buff_Workout_Legs, 200)
                         end
 
-                        
                         if buffRowName == Debuffs.Debuff_LacticAcid_Arms then
                             msg = string.format("Server applied Debuff_LacticAcid_Arms to %s, removing... ", playerName)
                             Utils.log(msg)
@@ -177,17 +174,6 @@ end
 ExecuteInGameThread(function()
     Utils.log("Initializing Instant Benching hooks")
 
-    -- ExecuteWithDelay(2500, function()
-    -- local okHook, errHook = pcall(RegisterHook,
-    --     "/Game/Blueprints/Meta/Abiotic_PlayerController.Abiotic_PlayerController_C:InpActEvt_ContinenceMinigame_K2Node_InputActionEvent_1",
-    --     handle_minigame
-    -- )
-    --     if not okHook then
-    --         print("Instant Benching Hook registration failed: %s", tostring(errHook))
-    --     else
-    --         print("Instant Benching Hook registration success: InpActEvt_ContinenceMinigame_K2Node_InputActionEvent_1")
-    --     end
-    -- end)
 
     ExecuteWithDelay(2500, function()
     local okHook, errHook = pcall(RegisterHook,
